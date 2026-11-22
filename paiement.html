@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payer mon abonnement</title>
+<style>
+:root{--bg:#0a0c14;--card:#131726;--line:#26304d;--txt:#f3f1ea;--mut:#9aa3bd;--blue:#2d5bff;--gold:#e0b04a}
+@media (prefers-color-scheme:light){:root{--bg:#f4f5fa;--card:#fff;--line:#d5d9e8;--txt:#10142a;--mut:#5a6280}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 system-ui,sans-serif;padding:16px;max-width:560px;margin-inline:auto}
+h1{font:700 26px/1.2 Georgia,serif;margin:8px 0 4px}
+p.sub{color:var(--mut);margin:0 0 18px}
+h2{font-size:17px;margin:22px 0 8px}
+select,input,button{font:inherit;width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--txt)}
+.total{margin:10px 0;padding:14px;border-radius:12px;border:1px solid var(--gold);display:flex;justify-content:space-between;align-items:baseline}
+.total b{font:700 24px Georgia,serif;color:var(--gold)}
+.m{border:1px solid var(--line);background:var(--card);border-radius:12px;margin-bottom:8px}
+.m>button{border:0;background:none;text-align:left;display:flex;justify-content:space-between;font-weight:600}
+.m .in{display:none;padding:0 14px 14px}
+.m.open .in{display:block}
+.m.open{border-color:var(--blue)}
+.tag{color:var(--mut);font-weight:400;font-size:14px}
+.num{font:700 22px Georgia,serif;margin:6px 0}
+.btn{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600;margin-top:8px}
+.btn.alt{background:none;color:var(--txt);border-color:var(--line)}
+.warn{color:var(--gold);font-size:14px}
+label{display:block;margin:10px 0 4px;color:var(--mut);font-size:14px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<h1>Payer mon abonnement</h1>
+<p class="sub">Choisis ton module, paie avec le moyen qui t’arrange, puis envoie ta preuve. Ton accès est activé dès que le paiement est vérifié.</p>
+
+<h2>Ton module</h2>
+<select id="mod"></select>
+<div class="total"><span>À payer pour 1 mois</span><span><b id="fcfa"></b> <span class="tag" id="eur"></span></span></div>
+
+<h2>Comment veux-tu payer ?</h2>
+<div id="methods"></div>
+
+<h2>J’ai payé</h2>
+<label for="nom">Ton nom</label><input id="nom" autocomplete="name">
+<label for="tel">Ton numéro de téléphone</label><input id="tel" type="tel" autocomplete="tel">
+<label for="ref">Numéro de la transaction (reçu par SMS)</label><input id="ref">
+<button class="btn" id="send">Envoyer ma preuve sur WhatsApp</button>
+<p class="warn" id="msg" role="status"></p>
+
+<script>
+/* ===== À REMPLIR PAR LE CRÉATEUR (seulement ici) ===== */
+const CONFIG = {
+  whatsapp: "A_REMPLIR",          // ton numéro WhatsApp avec l’indicatif, sans + ni espaces
+  prixEuro: 100,                  // prix d’un module par mois
+  tauxFcfa: 650,                  // 1 € = 650 FCFA
+  modules: ["Assistant IA","Secrétariat numérique","Comptabilité et finances","Gestion commerciale","Informatique et programmation","Gestion des e-mails","Documents et dossiers","Traduction","Agenda et organisation","Automatisation","Création et gestion de projets","Éducation et apprentissage"],
+  /* type "numero" : le client envoie l’argent à ce numéro
+     type "lien"   : le client est envoyé vers ton lien de paiement (PayDunya, CinetPay, Semoa…)
+     Laisse "A_REMPLIR" : le moyen reste « bientôt disponible » pour les clients */
+  moyens: [
+    {nom:"T-Money (Mixx by Yas)", type:"numero", valeur:"A_REMPLIR", aide:"Envoie le montant à ce numéro depuis ton T-Money, puis note le numéro de transaction."},
+    {nom:"Flooz (Moov Africa)",   type:"numero", valeur:"A_REMPLIR", aide:"Envoie le montant à ce numéro depuis ton Flooz, puis note le numéro de transaction."},
+    {nom:"Gozem Money",           type:"numero", valeur:"A_REMPLIR", aide:"Envoie le montant à ce numéro depuis Gozem Money, puis note le numéro de transaction."},
+    {nom:"Semoa CashPay",         type:"lien",   valeur:"A_REMPLIR", aide:"Paiement sécurisé en ligne."},
+    {nom:"PayDunya",              type:"lien",   valeur:"A_REMPLIR", aide:"Paiement sécurisé en ligne."},
+    {nom:"CinetPay",              type:"lien",   valeur:"A_REMPLIR", aide:"Paiement sécurisé en ligne."}
+  ]
+};
+/* ===== FIN DE LA ZONE À REMPLIR ===== */
+
+const $ = id => document.getElementById(id);
+const fcfa = CONFIG.prixEuro * CONFIG.tauxFcfa;
+const fmt = n => n.toLocaleString("fr-FR");
+$("fcfa").textContent = fmt(fcfa) + " FCFA";
+$("eur").textContent = "(" + CONFIG.prixEuro + " €)";
+CONFIG.modules.forEach(m => { const o = document.createElement("option"); o.textContent = m; $("mod").appendChild(o); });
+
+let choisi = "";
+CONFIG.moyens.forEach(m => {
+  const ok = m.valeur !== "A_REMPLIR";
+  const d = document.createElement("div"); d.className = "m";
+  const b = document.createElement("button");
+  b.innerHTML = "<span>" + m.nom + "</span><span class='tag'>" + (ok ? "Choisir" : "Bientôt disponible") + "</span>";
+  const c = document.createElement("div"); c.className = "in";
+  if (!ok) { c.innerHTML = "<p class='warn'>Ce moyen de paiement n’est pas encore activé.</p>"; }
+  else if (m.type === "numero") {
+    c.innerHTML = "<p>" + m.aide + "</p><div class='num'>" + m.valeur + "</div><button class='btn alt'>Copier le numéro</button>";
+    c.querySelector("button").onclick = () => { navigator.clipboard && navigator.clipboard.writeText(m.valeur); $("msg").textContent = "Numéro copié."; };
+  } else {
+    c.innerHTML = "<p>" + m.aide + "</p><a href='" + m.valeur + "' target='_blank' rel='noopener'><button class='btn'>Payer en ligne</button></a>";
+  }
+  b.onclick = () => { document.querySelectorAll(".m").forEach(x => x.classList.remove("open")); d.classList.add("open"); choisi = m.nom; };
+  d.append(b, c); $("methods").appendChild(d);
+});
+
+$("send").onclick = () => {
+  const nom = $("nom").value.trim(), tel = $("tel").value.trim(), ref = $("ref").value.trim();
+  if (!choisi) { $("msg").textContent = "Choisis d’abord un moyen de paiement."; return; }
+  if (!nom || !tel || !ref) { $("msg").textContent = "Remplis ton nom, ton numéro et le numéro de transaction."; return; }
+  if (CONFIG.whatsapp === "A_REMPLIR") { $("msg").textContent = "Le numéro WhatsApp du créateur n’est pas encore configuré."; return; }
+  const texte = "Bonjour, j’ai payé mon abonnement.\nModule : " + $("mod").value + "\nMontant : " + fmt(fcfa) + " FCFA\nMoyen : " + choisi + "\nTransaction : " + ref + "\nNom : " + nom + "\nTéléphone : " + tel;
+  window.open("https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(texte), "_blank");
+};
+</script>
+</body>
+</html>
