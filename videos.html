@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mes vidéos explicatives</title>
+<style>
+:root{--bg:#050b24;--card:#0d1a4a;--line:#2a52b8;--txt:#fff;--mut:#a9b8e6;--gold:#f5b82e}
+@media (prefers-color-scheme:light){:root{--bg:#eef2ff;--card:#fff;--line:#9db2f0;--txt:#0a1440;--mut:#4a5a8f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 system-ui,sans-serif;padding:14px;max-width:480px;margin-inline:auto}
+h1{font:700 24px Georgia,serif;margin:6px 0}
+.how{background:var(--card);border:1.5px solid var(--gold);border-radius:14px;padding:12px 14px;margin:10px 0 16px}
+.how ol{margin:6px 0 0;padding-left:20px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+.img{height:120px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:56px;background:linear-gradient(135deg,#0b2a7a,#3a1a8a);margin-bottom:10px;overflow:hidden}
+.img svg{height:100%;width:100%}
+h2{font-size:18px;margin:0 0 2px}
+.d{color:var(--mut);font-size:14px;margin:0 0 8px}
+ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
+a.b,button{display:block;width:100%;text-align:center;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:none;color:var(--txt);font:inherit;font-weight:600;text-decoration:none;margin-top:8px;cursor:pointer}
+a.g,button.g{background:var(--gold);border-color:var(--gold);color:#111}
+.end{position:sticky;bottom:8px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<h1>Mes vidéos explicatives</h1>
+<div class="how"><b>Pour créer une vidéo :</b>
+<ol><li>Appuie sur « Copier le texte » de la rubrique.</li>
+<li>Appuie sur « Ouvrir le Studio vidéo » en bas de la carte.</li>
+<li>Colle le texte, ajoute tes captures d’écran, appuie sur « Créer la vidéo ».</li></ol></div>
+<div id="L"></div>
+<a class="b g end" id="app" href="#">Entrer dans mon application</a>
+
+<script>
+const APP="https://brightfiverr5-pixel.github.io/gagner-constellation/";
+const PLAN='<svg viewBox="0 0 300 120"><rect width="300" height="120" fill="#0b2a7a"/><rect x="40" y="18" width="220" height="84" fill="none" stroke="#f5b82e" stroke-width="3"/><line x1="140" y1="18" x2="140" y2="102" stroke="#f5b82e" stroke-width="2"/><line x1="140" y1="62" x2="260" y2="62" stroke="#f5b82e" stroke-width="2"/><text x="70" y="64" fill="#fff" font-size="13">Salon</text><text x="180" y="44" fill="#fff" font-size="13">Chambre</text><text x="180" y="86" fill="#fff" font-size="13">Cuisine</text><text x="125" y="12" fill="#ffd96a" font-size="11">10 m</text><text x="262" y="64" fill="#ffd96a" font-size="11">8 m</text></svg>';
+/* [icône, titre, lien de la rubrique, ce que c’est, lignes de la vidéo séparées par | ] */
+const R=[
+["📲","Installer l’icône sur l’écran","","Pour que l’application reste sur le téléphone.","Ouvre Chrome et tape le lien de l’application|Appuie sur les trois points en haut à droite|Appuie sur « Installer l’application » ou « Ajouter à l’écran d’accueil »|Confirme : l’icône apparaît sur ton écran|Ouvre-la quand tu veux, comme une vraie application"],
+["🔎","Rechercher un travailleur","#cherche","Trouve un maçon, un coiffeur, un taxi…","Ouvre « Rechercher un travailleur »|Tape le métier, par exemple taxi ou maçon|Choisis une personne et appuie sur « Demander »|Elle accepte ou refuse|Si elle accepte, tu peux discuter avec elle sur WhatsApp"],
+["👷","Je suis travailleur : m’inscrire","#inscrip","Inscription gratuite pour les professionnels.","Tu cherches du travail ? Inscris-toi gratuitement|Choisis ton métier|Écris ton nom, ta ville et ton téléphone|Appuie sur « S’inscrire gratuitement »|Les clients de ton pays peuvent maintenant te trouver"],
+["🏠","Plan de maison","#plan","Décris ta maison, l’application dessine un plan.","Ouvre « Plan de maison »|Décris ce que tu veux construire, ou ajoute les pièces une à une|Appuie sur « Lire ma description »|Le plan s’affiche : salon, chambres, cuisine|Fais-le valider par un architecte avant de construire"],
+["🧾","Plans et devis","#devis","Calcule le prix de ton projet.","Ouvre « Plans et devis »|Choisis ton projet et remplis les quantités|Le prix de ton projet se calcule tout seul|Le plan d’architecture est toujours inclus|Imprime le devis ou enregistre-le en PDF"],
+["✍️","Devis par description","#devisd","Écris ce que tu veux, le devis sort avec les quantités.","Ouvre « Devis par description »|Écris ce que tu veux faire, avec tes mots|Appuie sur « Établir le devis »|Tu vois les quantités : câbles, tuyaux, matériaux|Fais valider les quantités par un professionnel"],
+["🎬","Studio vidéo","#studio","Photos + texte = vidéo animée.","Ouvre le Studio vidéo|Ajoute tes photos|Écris ton histoire : chaque phrase devient une scène animée|Choisis un style, la durée et ta musique|Appuie sur « Créer la vidéo » et partage-la"],
+["💼","Informatique : lien WhatsApp direct","#info","Un lien qui ouvre WhatsApp avec ton message déjà écrit.","Ouvre « Informatique »|Écris ton numéro et ton message|Appuie sur « Créer le lien »|Copie le lien|Mets-le dans ta bio ou tes publications : les clients t’écrivent en un clic"],
+["📣","Messages en masse","#masse","Un message pour tous tes contacts.","Ouvre « Messages en masse »|Écris un seul message avec {nom}|Ajoute tes contacts|Appuie sur « Préparer les envois »|Un bouton WhatsApp s’ouvre pour chaque contact"],
+["📢","Publier une offre de travail","#offre","Crée une annonce à partager.","Ouvre « Publier une offre de travail »|Remplis le métier, le lieu et le prix|Appuie sur « Créer l’annonce »|Partage-la sur WhatsApp ou Facebook|Les travailleurs te contactent"],
+["🪪","Ma carte professionnelle","#pro","Ta carte à partager avec tes clients.","Ouvre « Ma carte professionnelle »|Remplis ton nom, ton métier et ton téléphone|Appuie sur « Créer ma carte »|Enregistre-la ou envoie-la|Donne-la à tes clients"],
+["🚕","Taxi et moto","#taxi","Demande une course par WhatsApp avec ta position.","Ouvre « Taxi et moto »|Choisis moto-taxi, taxi ou voiture avec chauffeur|Appuie sur « Utiliser ma position »|Estime la distance et le prix|Appuie sur « Préparer la demande »"],
+["📒","Comptabilité","#compta","Recettes, dépenses et factures.","Ouvre « Comptabilité »|Note chaque recette et chaque dépense|Ajoute la photo du reçu si tu veux|Ton solde se calcule tout seul|Crée ta facture et enregistre-la en PDF"],
+["🛒","Commerce","#commerce","Clients et ventes.","Ouvre « Commerce »|Enregistre tes clients avec leur numéro|Appuie sur WhatsApp pour leur écrire|Note chaque vente|Regarde le total de tes ventes"],
+["⏰","Organisation","#orga","Tâches, rendez-vous et alarmes.","Ouvre « Organisation »|Écris ta tâche et choisis la date et l’heure|Une alarme sonne à l’heure|Appuie sur « Agenda + alarme » pour être prévenu application fermée|Coche la tâche quand elle est faite"],
+["📝","Secrétariat","#secretariat","Lettres et lecture de documents.","Ouvre « Secrétariat »|Prends une lettre en photo pour lire son texte|Ou choisis un modèle : candidature, démission, congé|Écris ton nom et le destinataire|Copie, enregistre en PDF ou envoie sur WhatsApp"],
+["🌍","Traduction","#trad","Traduis un texte ou une photo.","Ouvre « Traduction »|Photographie un texte ou écris-le|Choisis la langue de départ et d’arrivée|Appuie sur « Traduire »|Copie ou partage le résultat"],
+["📄","Documents PDF","#docs","Scanner et créer un PDF.","Ouvre « Documents PDF »|Prends tes pages en photo|Choisis le mode : document net, gris ou couleur|Appuie sur « Créer le PDF »|Envoie ton document, sans scanner"]
+];
+const $=i=>document.getElementById(i);$("app").href=APP;
+$("L").innerHTML=R.map((r,i)=>{const l=r[4].split("|");
+return `<div class="c"><div class="img">${r[1]=="Plan de maison"?PLAN:r[0]}</div><h2>${r[1]}</h2><p class="d">${r[3]}</p><ul>${l.map(x=>"<li>"+x+"</li>").join("")}</ul>
+<button class="g" onclick="cp(${i},this)">Copier le texte de la vidéo</button>
+<a class="b" href="${APP}#studio">Ouvrir le Studio vidéo</a>
+${r[2]?`<a class="b" href="${APP}${r[2]}">Ouvrir cette rubrique</a>`:""}</div>`}).join("");
+function cp(i,b){const t=R[i][4].split("|").join("\n");try{navigator.clipboard.writeText(t)}catch(e){}b.textContent="Texte copié ✓"}
+</script>
+</body>
+</html>
