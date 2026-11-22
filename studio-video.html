@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio vidéo</title>
+<style>
+:root{--bg:#050b24;--card:#0d1a4a;--line:#2a52b8;--txt:#fff;--mut:#9fb0e0;--gold:#f5b82e}
+@media (prefers-color-scheme:light){:root{--bg:#eef2ff;--card:#fff;--line:#9db2f0;--txt:#0a1440;--mut:#4a5a8f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 system-ui,sans-serif;padding:14px;max-width:480px;margin-inline:auto}
+h1{font:700 24px Georgia,serif;margin:6px 0 2px}.sub{color:var(--mut);margin:0 0 14px}
+label{display:block;margin:12px 0 4px;color:var(--mut);font-size:14px}
+input,select,textarea,button{font:inherit;width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--txt)}
+textarea{min-height:90px}
+button{background:var(--gold);border-color:var(--gold);color:#111;font-weight:700;margin-top:12px}
+button.alt{background:none;color:var(--txt);border-color:var(--line)}
+canvas,video{width:100%;max-height:70vh;border-radius:14px;background:#000;margin-top:12px;object-fit:contain}
+#st{color:var(--gold);min-height:22px;margin:8px 0}
+a.dl{display:block;text-align:center;padding:12px;border-radius:10px;background:var(--gold);color:#111;font-weight:700;text-decoration:none;margin-top:10px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<h1>Studio vidéo</h1>
+<p class="sub">Ajoute tes photos, écris ton texte : une vraie vidéo se fabrique et se télécharge.</p>
+
+<label for="ph">Photos (facultatif, plusieurs possibles)</label>
+<input id="ph" type="file" accept="image/*" multiple>
+<label for="tx">Ton texte (une ligne = un moment de la vidéo)</label>
+<textarea id="tx" placeholder="Je chante ma chanson préférée&#10;Regardez-moi&#10;Abonnez-vous"></textarea>
+<label for="sty">Style</label>
+<select id="sty"><option value="neon">Néon</option><option value="pop">Pop</option><option value="or">Doré</option></select>
+<label for="sec">Durée en secondes</label>
+<input id="sec" type="number" min="3" max="60" value="10">
+<label for="mu">Musique (facultatif, depuis ton téléphone)</label>
+<input id="mu" type="file" accept="audio/*">
+
+<button id="go">Créer la vidéo</button>
+<p id="st" role="status"></p>
+<canvas id="cv" width="540" height="960"></canvas>
+<div id="out"></div>
+
+<script>
+const $=i=>document.getElementById(i),cv=$("cv"),g=cv.getContext("2d"),W=540,H=960;
+let imgs=[];
+$("ph").onchange=async e=>{imgs=[];for(const f of e.target.files){try{const b=await createImageBitmap(f);imgs.push(b)}catch(_){}}$("st").textContent=imgs.length+" photo(s) prête(s).";draw(0)};
+const ease=t=>{const c=1.70158;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)};
+function wrap(txt,max){const w=txt.split(" "),l=[];let c="";w.forEach(x=>{if(g.measureText(c+" "+x).width>max&&c){l.push(c);c=x}else c=c?c+" "+x:x});l.push(c);return l}
+function bg(t,D){
+  if(imgs.length){const n=imgs.length,sl=D/n,i=Math.min(n-1,Math.floor(t/sl)),lt=(t-i*sl)/sl,im=imgs[i];
+    const z=1+.15*lt,s=Math.max(W/im.width,H/im.height)*z,w=im.width*s,h=im.height*s;
+    g.globalAlpha=1;g.drawImage(im,(W-w)/2-lt*14,(H-h)/2,w,h);
+    if(i>0&&lt<.12){g.globalAlpha=1-lt/.12;const p=imgs[i-1],s2=Math.max(W/p.width,H/p.height)*1.15;g.drawImage(p,(W-p.width*s2)/2,(H-p.height*s2)/2,p.width*s2,p.height*s2);g.globalAlpha=1}
+    g.fillStyle="rgba(0,0,0,.28)";g.fillRect(0,0,W,H);
+  }else{
+    const gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,"#0b2a7a");gr.addColorStop(1,"#1a0a4a");g.fillStyle=gr;g.fillRect(0,0,W,H);
+    for(let k=0;k<6;k++){const x=W/2+Math.sin(t*.8+k*1.7)*W*.4,y=H/2+Math.cos(t*.6+k*2.3)*H*.35,r=90+k*28;
+      const rg=g.createRadialGradient(x,y,0,x,y,r);rg.addColorStop(0,k%2?"rgba(245,184,46,.35)":"rgba(80,140,255,.4)");rg.addColorStop(1,"rgba(0,0,0,0)");g.fillStyle=rg;g.fillRect(x-r,y-r,2*r,2*r)}
+  }
+}
+function cap(t,D){
+  const L=$("tx").value.split("\n").map(s=>s.trim()).filter(Boolean);if(!L.length)return;
+  const sl=D/L.length,i=Math.min(L.length-1,Math.floor(t/sl)),lt=(t-i*sl)/sl,k=Math.min(1,lt/.18),sc=.6+.4*ease(k),st=$("sty").value;
+  g.save();g.translate(W/2,H*.72);g.scale(sc,sc);g.globalAlpha=Math.min(1,k*2)*(lt>.92?(1-lt)/.08:1);
+  g.textAlign="center";g.textBaseline="middle";
+  g.font=(st=="or"?"bold 46px Georgia,serif":"900 48px Arial Black,Arial,sans-serif");
+  const ln=wrap(L[i],W-90),lh=60,y0=-(ln.length-1)*lh/2;
+  ln.forEach((s,j)=>{const y=y0+j*lh;
+    if(st=="neon"){g.shadowColor="#3df2ff";g.shadowBlur=28;g.fillStyle="#fff";g.strokeStyle="#ff2bd6";g.lineWidth=3;g.strokeText(s,0,y);g.fillText(s,0,y)}
+    else if(st=="pop"){g.lineWidth=12;g.strokeStyle="#000";g.lineJoin="round";g.strokeText(s,0,y);g.fillStyle=j%2?"#fff":"#ffe14a";g.fillText(s,0,y)}
+    else{const gr=g.createLinearGradient(0,y-24,0,y+24);gr.addColorStop(0,"#ffe9a0");gr.addColorStop(1,"#c98c10");g.shadowColor="rgba(0,0,0,.8)";g.shadowBlur=12;g.fillStyle=gr;g.fillText(s,0,y)}
+  });g.restore();
+}
+function draw(t){const D=+$("sec").value||10;g.clearRect(0,0,W,H);bg(t,D);cap(t,D)}
+draw(0);$("tx").oninput=$("sty").onchange=()=>draw(1);
+
+$("go").onclick=async()=>{
+  const D=Math.min(60,Math.max(3,+$("sec").value||10));
+  if(!window.MediaRecorder||!cv.captureStream){$("st").textContent="Ton navigateur ne sait pas créer de vidéo. Ouvre cette page dans Chrome.";return}
+  const mime=["video/mp4;codecs=avc1","video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"].find(m=>MediaRecorder.isTypeSupported(m))||"";
+  const stream=cv.captureStream(30);let ac=null,src=null;
+  const mf=$("mu").files[0];
+  if(mf){try{ac=new(window.AudioContext||window.webkitAudioContext)();const buf=await ac.decodeAudioData(await mf.arrayBuffer()),d=ac.createMediaStreamDestination();src=ac.createBufferSource();src.buffer=buf;src.connect(d);d.stream.getAudioTracks().forEach(x=>stream.addTrack(x))}catch(_){$("st").textContent="Musique non lue : la vidéo sera sans son.";src=null}}
+  const rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:3e6}:undefined),ch=[];
+  rec.ondataavailable=e=>e.data.size&&ch.push(e.data);
+  rec.onstop=()=>{const type=rec.mimeType||"video/webm",ext=type.includes("mp4")?"mp4":"webm",b=new Blob(ch,{type}),u=URL.createObjectURL(b);
+    $("out").innerHTML="<video controls playsinline src='"+u+"'></video><a class='dl' download='ma-video."+ext+"' href='"+u+"'>Télécharger ma vidéo</a>";
+    if(navigator.canShare&&navigator.canShare({files:[new File([b],"ma-video."+ext,{type})]})){const s=document.createElement("button");s.className="alt";s.textContent="Partager";s.onclick=()=>navigator.share({files:[new File([b],"ma-video."+ext,{type})]}).catch(()=>{});$("out").appendChild(s)}
+    $("st").textContent="Vidéo prête ✓";$("go").disabled=false;if(ac)ac.close()};
+  $("go").disabled=true;$("out").innerHTML="";rec.start();if(src)src.start();
+  const t0=performance.now();
+  (function loop(){const t=(performance.now()-t0)/1000;if(t>=D){draw(D-.01);rec.stop();return}
+    draw(t);$("st").textContent="Création… "+Math.round(t/D*100)+" %";requestAnimationFrame(loop)})();
+};
+</script>
+</body>
+</html>
